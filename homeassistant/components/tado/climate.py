@@ -76,7 +76,12 @@ def create_climate_device(tado, hass, zone, name, zone_id):
     ac_mode = capabilities['type'] == 'AIR_CONDITIONING'
 
     if ac_mode:
-        temperatures = capabilities['HEAT']['temperatures']
+        # Only use heat if available (you don't have to setup a heat mode, but cool is required)
+        # Heat is preferred as it generally has a lower minimum temperature
+        if 'HEAT' in capabilities:
+            temperatures = capabilities['HEAT']['temperatures']
+        else:
+            temperatures = capabilities['COOL']['temperatures']
     elif 'temperatures' in capabilities:
         temperatures = capabilities['temperatures']
     else:
